@@ -8,7 +8,7 @@
     "require": {
         "php": "^7.2",
         "laravel/scout": "~2.0 || ~3.0",
-        "illuminate/events": "^5.1",
+        "illuminate/events": "^7.0.0",
         "illuminate/contracts": "^7.0.0"
     },
     "require-dev": {
