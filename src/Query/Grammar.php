@@ -11,7 +11,7 @@ class Grammar
         'wheres',
     ];
 
-	public function compileSelect(QueryStructureBuilder $query)
+    public function compileSelect(QueryStructureBuilder $query)
     {
         $sql = trim($this->concatenate($this->compileComponents($query)));
 
@@ -30,8 +30,8 @@ class Grammar
         $sql = [];
 
         foreach ($this->selectComponents as $component) {
-            if (! is_null($query->$component)) {
-                $method = 'compile'.ucfirst($component);
+            if (!is_null($query->$component)) {
+                $method = 'compile' . ucfirst($component);
 
                 $sql[$component] = $this->$method($query, $query->$component);
             }
@@ -51,7 +51,7 @@ class Grammar
         foreach ($query->wheres as $where) {
             $method = "where{$where['type']}";
 
-            $sql[] = strtoupper($where['boolean']).' '.$this->$method($query, $where);
+            $sql[] = strtoupper($where['boolean']) . ' ' . $this->$method($query, $where);
         }
 
         if (count($sql) > 0) {
@@ -65,16 +65,16 @@ class Grammar
 
     protected function whereBasic(QueryStructureBuilder $query, $where)
     {
-        $value = '\''.$where['value'].'\'';
+        $value = '\'' . $where['value'] . '\'';
 
-        return $where['column'].$where['operator'].$value;
+        return $where['column'] . $where['operator'] . $value;
     }
 
     protected function whereNested(QueryStructureBuilder $query, $where)
     {
         $nested = $where['query'];
 
-        return '('.$this->compileWheres($nested).')';
+        return '(' . $this->compileWheres($nested) . ')';
     }
 
     protected function removeLeadingBoolean($value)

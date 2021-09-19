@@ -14,7 +14,7 @@ class SearchableScope extends ScoutSearchableScope
     /**
      * Extend the query builder with the needed functions.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      * @return void
      */
     public function extend(EloquentBuilder $builder)

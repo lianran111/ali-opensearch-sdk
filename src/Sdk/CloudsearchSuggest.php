@@ -165,7 +165,7 @@ class CloudsearchSuggest
      * @subparam             query 查询关键词
      * @return string 返回api返回的结果。
      */
-    public function search($opts = array())
+    public function search($opts = [])
     {
         if (!empty($opts)) {
             if (isset($opts['index_name']) && $opts['index_name'] !== '') {
@@ -185,12 +185,12 @@ class CloudsearchSuggest
             }
         }
 
-        $params = array(
+        $params = [
             "index_name"   => $this->getIndexName(),
             "suggest_name" => $this->getSuggestName(),
             "hit"          => $this->getHits(),
             "query"        => $this->getQuery(),
-        );
+        ];
 
         return $this->client->call($this->path, $params);
     }

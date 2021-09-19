@@ -113,15 +113,15 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Create a new search builder instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $query
-     * @param  Closure  $callback
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param string                              $query
+     * @param Closure                             $callback
      * @return void
      */
     public function __construct($model, $query, $callback = null)
     {
-        $this->model = $model;
-        $this->query = $query;
+        $this->model    = $model;
+        $this->query    = $query;
         $this->callback = $callback;
 
         $this->select();
@@ -130,7 +130,7 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Specify a custom index to perform this search on.
      *
-     * @param  string  $index
+     * @param string $index
      * @return $this
      */
     public function within($index)
@@ -143,8 +143,8 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Add a constraint to the search filter.
      *
-     * @param  mixed  $field
-     * @param  mixed  $value
+     * @param mixed $field
+     * @param mixed $value
      * @return $this
      */
     public function filter($field, $value = null)
@@ -152,7 +152,7 @@ class ExtendedBuilder extends ScoutBuilder
         if (is_array($field)) {
             $this->filters[] = $field;
         } else {
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 $value = [$field, '=', $value];
             } else {
                 array_unshift($value, $field);
@@ -167,7 +167,7 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Set the "limit" for the search query.
      *
-     * @param  int  $limit
+     * @param int $limit
      * @return $this
      */
     public function take($limit)
@@ -179,7 +179,7 @@ class ExtendedBuilder extends ScoutBuilder
 
     public function forPage($page, $perPage = 20)
     {
-        $this->page = $page;
+        $this->page  = $page;
         $this->limit = $perPage;
 
         return $this;
@@ -188,16 +188,16 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Add a constraint to the search query.
      *
-     * @param  string  $field
-     * @param  array  $values
+     * @param string $field
+     * @param array  $values
      * @return $this
      */
     public function filterIn($field, array $values = [])
     {
-        $this->rawFilters[] = '(' . collect($values)->map(function($item) use ($field) {
-            $item = !is_numeric($item) && is_string($item) ? '"' . $item . '"' : $item;
-            return $field . '=' . $item;
-        })->implode(' OR ') . ')';
+        $this->rawFilters[] = '(' . collect($values)->map(function ($item) use ($field) {
+                $item = !is_numeric($item) && is_string($item) ? '"' . $item . '"' : $item;
+                return $field . '=' . $item;
+            })->implode(' OR ') . ')';
 
         return $this;
     }
@@ -205,14 +205,14 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Add an "order" for the search query.
      *
-     * @param  string  $column
-     * @param  string  $direction
+     * @param string $column
+     * @param string $direction
      * @return $this
      */
     public function orderBy($column, $direction = 'asc')
     {
         $this->orders[] = [
-            'column' => $column,
+            'column'    => $column,
             'direction' => strtolower($direction) == 'asc' ? 'asc' : 'desc',
         ];
 
@@ -222,13 +222,13 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Add an default rank to order.
      *
-     * @param  string  $direction
+     * @param string $direction
      * @return $this
      */
     public function orderByRank($direction = 'desc')
     {
         $this->orders[] = [
-            'column' => 'RANK',
+            'column'    => 'RANK',
             'direction' => strtolower($direction) == 'desc' ? 'desc' : 'asc',
         ];
 
@@ -240,7 +240,7 @@ class ExtendedBuilder extends ScoutBuilder
         if (empty($fields)) {
             $fields = $this->model->getSearchableFields();
 
-            if (! is_array($fields)) {
+            if (!is_array($fields)) {
                 $fields = explode(',', $fields);
             }
         }
@@ -328,18 +328,18 @@ class ExtendedBuilder extends ScoutBuilder
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param  int  $perPage
-     * @param  string  $pageName
-     * @param  int|null  $page
+     * @param int      $perPage
+     * @param string   $pageName
+     * @param int|null $page
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function paginate($perPage = null, $pageName = 'page', $page = null)
     {
         $engine = $this->engine();
 
-        $page = $page ?: Paginator::resolveCurrentPage($pageName);
+        $page = $page ? : Paginator::resolveCurrentPage($pageName);
 
-        $perPage = $perPage ?: $this->model->getPerPage();
+        $perPage = $perPage ? : $this->model->getPerPage();
 
         $this->forPage($page, $perPage);
 
@@ -348,7 +348,7 @@ class ExtendedBuilder extends ScoutBuilder
         ));
 
         $paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($rawResults), $perPage, $page, [
-            'path' => Paginator::resolveCurrentPath(),
+            'path'     => Paginator::resolveCurrentPath(),
             'pageName' => $pageName,
         ]));
 

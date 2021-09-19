@@ -30,6 +30,7 @@ class CloudsearchIndex
 {
     const STATUS_OK   = 'OK';
     const STATUS_FAIL = 'FAIL';
+
     /**
      * 应用名称。
      * @var string
@@ -50,7 +51,7 @@ class CloudsearchIndex
 
     /**
      * 构造函数
-     * @param string $indexName 指定操作的应用名称。
+     * @param string            $indexName 指定操作的应用名称。
      * @param CloudsearchClient $client cloudsearch客户端
      */
     public function __construct($indexName, $client)
@@ -65,16 +66,16 @@ class CloudsearchIndex
      *
      * 用指定的模板名称创建一个新的应用。
      * @param string $templateName 模板名称(可以使系统内置模板，也可以是自定义模板)
-     * @param array $opts 包含应用的备注信息。
+     * @param array  $opts 包含应用的备注信息。
      *
      * @return string 返回api返回的结果。
      */
-    public function createByTemplateName($templateName, $opts = array())
+    public function createByTemplateName($templateName, $opts = [])
     {
-        $params = array(
+        $params = [
             'action'   => "create",
             'template' => $templateName,
-        );
+        ];
 
         if (isset($opts['desc']) && !empty($opts['desc'])) {
             $params['index_des'] = $opts['desc'];
@@ -88,16 +89,16 @@ class CloudsearchIndex
      *
      * 用指定的模板创建一个新的应用。模版是一个格式化数组,用于描述应用的结构，可以在控制台中通过创建应用->保存模板->导出模板来获得json结构的模板；也可以自己生成，格式见控制台模板管理。
      * @param string $template 使用的模板
-     * @param array $opts 包含应用的备注信息。
+     * @param array  $opts 包含应用的备注信息。
      *
      * @return string 返回api返回的正确或错误的结果。
      */
-    public function createByTemplate($template, $opts = array())
+    public function createByTemplate($template, $opts = [])
     {
-        $params = array(
+        $params = [
             'action'   => "create",
             'template' => $template,
-        );
+        ];
 
         if (isset($opts['desc']) && !empty($opts['desc'])) {
             $params['index_des'] = $opts['desc'];
@@ -113,15 +114,15 @@ class CloudsearchIndex
      *
      * 更新当前应用的应用名称和备注信息。
      * @param string $toIndexName 更改后的新名字
-     * @param array $opts 可选参数,包含： desc 应用备注信息
+     * @param array  $opts 可选参数,包含： desc 应用备注信息
      * @return string API返回的操作结果
      */
-    public function rename($toIndexName, $opts = array())
+    public function rename($toIndexName, $opts = [])
     {
-        $params = array(
+        $params = [
             'action'         => "update",
             'new_index_name' => $toIndexName,
-        );
+        ];
 
         if (isset($opts['desc']) && !empty($opts['desc'])) {
             $params['description'] = $opts['desc'];
@@ -148,7 +149,7 @@ class CloudsearchIndex
      */
     public function delete()
     {
-        return $this->client->call($this->path, array('action' => "delete"));
+        return $this->client->call($this->path, ['action' => "delete"]);
     }
 
     /**
@@ -158,7 +159,7 @@ class CloudsearchIndex
      */
     public function status()
     {
-        return $this->client->call($this->path, array('action' => "status"));
+        return $this->client->call($this->path, ['action' => "status"]);
     }
 
     /**
@@ -169,10 +170,10 @@ class CloudsearchIndex
      */
     public function listIndexes($page = 1, $pageSize = 10)
     {
-        $params = array(
+        $params = [
             'page'      => $page,
             'page_size' => $pageSize,
-        );
+        ];
         return $this->client->call('/index', $params);
     }
 
@@ -201,10 +202,10 @@ class CloudsearchIndex
         $this->_checkPageClause($page);
         $this->_checkPageSizeClause($pageSize);
 
-        $params = array(
+        $params = [
             'page'      => $page,
             'page_size' => $pageSize,
-        );
+        ];
         return $this->client->call('/index/error/' . $this->indexName, $params);
     }
 

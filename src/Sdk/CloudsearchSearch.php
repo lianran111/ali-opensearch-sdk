@@ -67,7 +67,7 @@ class CloudsearchSearch
      *
      * @var array
      */
-    private $indexes = array();
+    private $indexes = [];
 
     /**
      * 指定某些字段的一些summary展示规则。
@@ -94,7 +94,7 @@ class CloudsearchSearch
      * </code>
      * @var array
      */
-    private $summary = array();
+    private $summary = [];
 
     /**
      * config 子句。
@@ -132,7 +132,7 @@ class CloudsearchSearch
      * 设定排序规则。
      * @var array
      */
-    private $sort = array();
+    private $sort = [];
 
     /**
      * 设定过滤条件。
@@ -144,13 +144,13 @@ class CloudsearchSearch
      * aggregate设定规则。
      * @var array
      */
-    private $aggregate = array();
+    private $aggregate = [];
 
     /**
      * distinct 排序。
      * @var array
      */
-    private $distinct = array();
+    private $distinct = [];
 
     /**
      * 返回字段过滤。
@@ -158,7 +158,7 @@ class CloudsearchSearch
      * 如果设定了此字段，则只返回此字段里边的field。
      * @var array
      */
-    private $fetches = array();
+    private $fetches = [];
 
     /**
      * rerankSize表示参与精排算分的文档个数，一般不用使用默认值就能满足，不用设置,会自动使用默认值200
@@ -200,13 +200,13 @@ class CloudsearchSearch
      * 指定qp 名称。
      * @var array
      */
-    private $QPName = array();
+    private $QPName = [];
 
     /**
      * 指定关闭的方法名称。
      * @var unknown
      */
-    private $functions = array();
+    private $functions = [];
 
     /**
      * 设定自定义参数。
@@ -215,7 +215,7 @@ class CloudsearchSearch
      *
      * @var string
      */
-    private $customParams = array();
+    private $customParams = [];
 
     private $scrollId = null;
 
@@ -290,7 +290,7 @@ class CloudsearchSearch
      * @param array $opts 扫描请求所需参数
      * @return string 扫描结果
      */
-    public function scroll($opts = array())
+    public function scroll($opts = [])
     {
         $this->extract($opts, "scroll");
         return $this->call('scroll');
@@ -319,7 +319,7 @@ class CloudsearchSearch
      * @return string 返回搜索结果。
      *
      */
-    public function search($opts = array())
+    public function search($opts = [])
     {
         $this->extract($opts);
         return $this->call();
@@ -437,18 +437,19 @@ class CloudsearchSearch
      * @param string $elementPostfix 如果指定了此参数，则标红的结束标签以此为准。
      */
     public function addSummary($fieldName, $len = 0, $element = '',
-        $ellipsis = '', $snipped = 0, $elementPrefix = '', $elementPostfix = '') {
+                               $ellipsis = '', $snipped = 0, $elementPrefix = '', $elementPostfix = '')
+    {
         if (empty($fieldName)) {
             return false;
         }
 
-        $summary                                                      = array();
-        $summary['summary_field']                                     = $fieldName;
-        empty($len) || $summary['summary_len']                        = (int) $len;
-        empty($element) || $summary['summary_element']                = $element;
-        empty($ellipsis) || $summary['summary_ellipsis']              = $ellipsis;
-        empty($snipped) || $summary['summary_snipped']                = $snipped;
-        empty($elementPrefix) || $summary['summary_element_prefix']   = $elementPrefix;
+        $summary                  = [];
+        $summary['summary_field'] = $fieldName;
+        empty($len) || $summary['summary_len'] = (int) $len;
+        empty($element) || $summary['summary_element'] = $element;
+        empty($ellipsis) || $summary['summary_ellipsis'] = $ellipsis;
+        empty($snipped) || $summary['summary_snipped'] = $snipped;
+        empty($elementPrefix) || $summary['summary_element_prefix'] = $elementPrefix;
         empty($elementPostfix) || $summary['summary_element_postfix'] = $elementPostfix;
 
         $this->summary[$fieldName] = $summary;
@@ -475,10 +476,10 @@ class CloudsearchSearch
      */
     public function getSummaryString()
     {
-        $summary = array();
+        $summary = [];
         if (is_array($s = $this->getSummary()) && !empty($s)) {
             foreach ($this->getSummary() as $summaryAttributes) {
-                $item = array();
+                $item = [];
                 if (is_array($summaryAttributes) && !empty($summaryAttributes)) {
                     foreach ($summaryAttributes as $k => $v) {
                         $item[] = $k . ":" . $v;
@@ -602,7 +603,7 @@ class CloudsearchSearch
     public function getSortString()
     {
         $sort       = $this->getSort();
-        $sortString = array();
+        $sortString = [];
         if (is_array($sort) && !empty($sort)) {
             foreach ($sort as $k => $v) {
                 $sortString[] = $v . $k;
@@ -657,20 +658,21 @@ class CloudsearchSearch
      * @param string $aggSamplerStep 抽样统计的步长。
      */
     public function addAggregate($groupKey, $aggFun, $range = '', $maxGroup = '',
-        $aggFilter = '', $aggSamplerThresHold = '', $aggSamplerStep = '') {
+                                 $aggFilter = '', $aggSamplerThresHold = '', $aggSamplerStep = '')
+    {
         if (empty($groupKey) || empty($aggFun)) {
             return false;
         }
 
-        $aggregate              = array();
+        $aggregate              = [];
         $aggregate['group_key'] = $groupKey;
         $aggregate['agg_fun']   = $aggFun;
 
-        empty($range) || $aggregate['range']          = $range;
-        empty($maxGroup) || $aggregate['max_group']   = $maxGroup;
+        empty($range) || $aggregate['range'] = $range;
+        empty($maxGroup) || $aggregate['max_group'] = $maxGroup;
         empty($aggFilter) || $aggregate['agg_filter'] = $aggFilter;
         empty($aggSamplerThresHold) ||
-        $aggregate['agg_sampler_threshold']                      = $aggSamplerThresHold;
+        $aggregate['agg_sampler_threshold'] = $aggSamplerThresHold;
         empty($aggSamplerStep) || $aggregate['agg_sampler_step'] = $aggSamplerStep;
 
         $this->aggregate[$groupKey][] = $aggregate;
@@ -704,10 +706,10 @@ class CloudsearchSearch
      */
     public function getAggregateString()
     {
-        $aggregate = array();
+        $aggregate = [];
         if (is_array($agg = $this->getAggregate()) && !empty($agg)) {
             foreach ($agg as $aggDescs) {
-                $item = array();
+                $item = [];
                 if (is_array($aggDescs) && !empty($aggDescs)) {
                     foreach ($aggDescs as $aggDesc) {
                         foreach ($aggDesc as $itemKey => $itemValue) {
@@ -734,31 +736,33 @@ class CloudsearchSearch
      * 更多说明请参见 [API distinct子句]({{!api-reference/query-clause&distinct-clause!}})
      *
      * @param string $key 为用户用于做distinct抽取的字段，该字段要求建立Attribute索引。
-     * @param int $distCount 为一次抽取的document数量，默认值为1。
-     * @param int $distTimes 为抽取的次数，默认值为1。
+     * @param int    $distCount 为一次抽取的document数量，默认值为1。
+     * @param int    $distTimes 为抽取的次数，默认值为1。
      * @param string $reserved 为是否保留抽取之后剩余的结果，true为保留，false则丢弃，丢弃时totalHits的个数会减去被distinct而丢弃的个数，但这个结果不一定准确，默认为true。
-     * @param string $distFilter 为过滤条件，被过滤的doc不参与distinct，只在后面的 排序中，这些被过滤的doc将和被distinct出来的第一组doc一起参与排序。默认是全部参与distinct。
+     * @param string $distFilter 为过滤条件，被过滤的doc不参与distinct，只在后面的
+     *     排序中，这些被过滤的doc将和被distinct出来的第一组doc一起参与排序。默认是全部参与distinct。
      * @param string $updateTotalHit 当reserved为false时，设置update_total_hit为true，则最终total_hit会减去被distinct丢弃的的数目（不一定准确），为false则不减；默认为false。
-     * @param int $maxItemCount 设置计算distinct时最多保留的doc数目。
+     * @param int    $maxItemCount 设置计算distinct时最多保留的doc数目。
      * @param number $grade 指定档位划分阈值。
      */
     public function addDistinct($key, $distCount = 0, $distTimes = 0,
-        $reserved = '', $distFilter = '', $updateTotalHit = '',
-        $maxItemCount = 0, $grade = '') {
+                                $reserved = '', $distFilter = '', $updateTotalHit = '',
+                                $maxItemCount = 0, $grade = '')
+    {
 
         if (empty($key)) {
             return false;
         }
 
-        $distinct             = array();
+        $distinct             = [];
         $distinct['dist_key'] = $key;
         empty($distCount) || ($distinct['dist_count'] = (int) $distCount);
-        empty($distTimes) || $distinct['dist_times']            = (int) $distTimes;
-        empty($reserved) || $distinct['reserved']               = $reserved;
-        empty($distFilter) || $distinct['dist_filter']          = $distFilter;
+        empty($distTimes) || $distinct['dist_times'] = (int) $distTimes;
+        empty($reserved) || $distinct['reserved'] = $reserved;
+        empty($distFilter) || $distinct['dist_filter'] = $distFilter;
         empty($updateTotalHit) || $distinct['update_total_hit'] = $updateTotalHit;
-        empty($maxItemCount) || $distinct['max_item_count']     = (int) $maxItemCount;
-        empty($grade) || $distinct['grade']                     = $grade;
+        empty($maxItemCount) || $distinct['max_item_count'] = (int) $maxItemCount;
+        empty($grade) || $distinct['grade'] = $grade;
 
         $this->distinct[$key] = $distinct;
     }
@@ -790,10 +794,10 @@ class CloudsearchSearch
      */
     public function getDistinctString()
     {
-        $distinct = array();
+        $distinct = [];
         if (is_array($s = $this->getDistinct()) && !empty($s)) {
             foreach ($s as $distinctAttribute) {
-                $item = array();
+                $item = [];
                 if ($distinctAttribute['dist_key'] != 'none_dist') {
                     if (is_array($distinctAttribute) && !empty($distinctAttribute)) {
                         foreach ($distinctAttribute as $k => $v) {
@@ -956,7 +960,7 @@ class CloudsearchSearch
      * "spell_check" 表示关闭qp的拼音纠错功能。
      * "stop_word:index1|index2" 表示关闭qp中索引名为index1和index2上的停用词功能。
      *
-     * @param string $functionName 指定的functionName，例如“qp”等
+     * @param string       $functionName 指定的functionName，例如“qp”等
      * @param string|array $disableValue 需要关闭的值
      */
     public function addDisabledQP($disableValue = "")
@@ -979,11 +983,11 @@ class CloudsearchSearch
         }
     }
 
-/**
- * 获取所有禁止的功能模块
- *
- * @return array 所哟禁止的功能模块
- */
+    /**
+     * 获取所有禁止的功能模块
+     *
+     * @return array 所哟禁止的功能模块
+     */
     public function getDisabledFunction()
     {
         return $this->functions;
@@ -997,7 +1001,7 @@ class CloudsearchSearch
     public function getDisabledFunctionString()
     {
         $functions = $this->getDisabledFunction();
-        $result    = array();
+        $result    = [];
         if (!empty($functions)) {
             foreach ($functions as $functionName => $value) {
                 $string = "";
@@ -1108,9 +1112,9 @@ class CloudsearchSearch
             isset($opts['rerankSize']) && $this->addRerankSize($opts['rerankSize']);
 
             if ($type == 'search') {
-                isset($opts['sort']) && $this->sort           = $opts['sort'];
+                isset($opts['sort']) && $this->sort = $opts['sort'];
                 isset($opts['aggregate']) && $this->aggregate = $opts['aggregate'];
-                isset($opts['distinct']) && $this->distinct   = $opts['distinct'];
+                isset($opts['distinct']) && $this->distinct = $opts['distinct'];
                 isset($opts['formula_name']) && $this->setFormulaName($opts['formula_name']);
                 isset($opts['summary']) && $this->summary = $opts['summary'];
                 isset($opts['qp']) && $this->addQPName($opts['qp']);
@@ -1132,7 +1136,7 @@ class CloudsearchSearch
      */
     private function call($type = 'search')
     {
-        $haquery   = array();
+        $haquery   = [];
         $haquery[] = "config=" . $this->clauseConfig();
         $haquery[] = "query=" . ($this->getQuery() ? $this->getQuery() : "''") . "";
 
@@ -1144,11 +1148,11 @@ class CloudsearchSearch
             ($a = $this->getAggregateString()) && ($haquery[] = 'aggregate=' . $a);
         }
 
-        $params = array(
+        $params = [
             'query'      => implode("&&", $haquery),
             'index_name' => implode(";", $this->getSearchIndexes()),
             'format'     => $this->getFormat(),
-        );
+        ];
 
         if ($result = $this->getCustomParam()) {
             foreach ($result as $k => $v) {
@@ -1178,7 +1182,7 @@ class CloudsearchSearch
      */
     private function clauseConfig()
     {
-        $config   = array();
+        $config   = [];
         $config[] = 'format:' . $this->getFormat();
         $config[] = 'start:' . $this->getStartHit();
         $config[] = 'hit:' . $this->getHits();

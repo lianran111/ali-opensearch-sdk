@@ -71,7 +71,7 @@ trait Searchable
     /**
      * Dispatch the job to make the given models searchable.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param \Illuminate\Database\Eloquent\Collection $models
      * @return void
      */
     public function queueMakeSearchable($models)
@@ -80,7 +80,7 @@ trait Searchable
             return;
         }
 
-        if (! config('scout.queue')) {
+        if (!config('scout.queue')) {
             return $models->first()->searchableUsing()->add($models);
         }
 
@@ -92,7 +92,7 @@ trait Searchable
     /**
      * Dispatch the job to update the given models searchable.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param \Illuminate\Database\Eloquent\Collection $models
      * @return void
      */
     public function queueUpdateSearchable($models)
@@ -101,7 +101,7 @@ trait Searchable
             return;
         }
 
-        if (! config('scout.queue')) {
+        if (!config('scout.queue')) {
             return $models->first()->searchableUsing()->update($models);
         }
 
@@ -113,7 +113,7 @@ trait Searchable
     /**
      * Dispatch the job to remove the given models searchable.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param \Illuminate\Database\Eloquent\Collection $models
      * @return void
      */
     public function queueRemoveFromSearch($models)
@@ -122,7 +122,7 @@ trait Searchable
             return;
         }
 
-        if (! config('scout.queue')) {
+        if (!config('scout.queue')) {
             return $models->first()->searchableUsing()->remove($models);
         }
 
@@ -145,8 +145,8 @@ trait Searchable
     /**
      * Perform a search against the model's indexed data.
      *
-     * @param  string  $query
-     * @param  Closure  $callback
+     * @param string  $query
+     * @param Closure $callback
      * @return Lingxi\AliOpenSearch\ExtendBuilder
      */
     public static function search($query, $callback = null)

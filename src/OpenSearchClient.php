@@ -80,6 +80,6 @@ class OpenSearchClient
      */
     public function getCloudSearchDoc($indexName)
     {
-         return new CloudsearchDoc($indexName, $this->getCloudSearchClient());
+        return new CloudsearchDoc($indexName, $this->getCloudSearchClient());
     }
 }

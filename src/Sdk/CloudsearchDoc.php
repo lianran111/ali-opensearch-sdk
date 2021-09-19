@@ -110,11 +110,11 @@ class CloudsearchDoc
 
     /**
      * 构造函数
-     * @param string $indexName 指定操作的索引名称。
+     * @param string            $indexName 指定操作的索引名称。
      * @param CloudsearchClient $client cloudsearch客户端
-     * @param array $opts 可选参数
+     * @param array             $opts 可选参数
      */
-    public function __construct($indexName, $client, $opts = array())
+    public function __construct($indexName, $client, $opts = [])
     {
         $this->indexName = $indexName;
         $this->client    = $client;
@@ -131,7 +131,7 @@ class CloudsearchDoc
      */
     public function detail($docId)
     {
-        $item = array("id" => $docId);
+        $item = ["id" => $docId];
         return $this->client->call($this->path, $item, self::METHOD);
     }
 
@@ -139,7 +139,7 @@ class CloudsearchDoc
      * 更新文档
      *
      * 向指定的表中更新doc。
-     * @param array $docs 指定要更新的doc。
+     * @param array  $docs 指定要更新的doc。
      * @param string $tableName 指定向哪个表中更新doc。
      * @return string 返回API返回的结果。
      */
@@ -152,7 +152,7 @@ class CloudsearchDoc
      * 添加文档
      *
      * 向指定的表中增加doc。
-     * @param array $docs 指定要添加的doc。
+     * @param array  $docs 指定要添加的doc。
      * @param string $tableName 指定向哪个表中增加doc。
      * @return string 返回API返回的结果。
      */
@@ -165,7 +165,7 @@ class CloudsearchDoc
      * 删除文档
      *
      * 删除指定表中的doc。
-     * @param array $docs 指定要删除的doc列表，必须含有主键。
+     * @param array  $docs 指定要删除的doc列表，必须含有主键。
      * @param string $tableName 指定要从哪个表删除记录。
      * @return string 返回API返回的结果。
      */
@@ -178,7 +178,7 @@ class CloudsearchDoc
      * 删除文档
      *
      * 删除指定表中的doc。
-     * @param array $docs 指定要删除的doc列表，必须含有主键。
+     * @param array  $docs 指定要删除的doc列表，必须含有主键。
      * @param string $tableName 指定要从哪个表删除记录。
      * @return string 返回API返回的结果。
      */
@@ -191,9 +191,9 @@ class CloudsearchDoc
      * 执行文档相关操作
      *
      * @param array|string $docs 此docs为用户push的数据，此字段为json_encode的字符串或者数据。
-     * @param string $tableName 操作的表名。
-     * @throws Exception
+     * @param string       $tableName 操作的表名。
      * @return string 请求API并返回相应的结果。
+     * @throws Exception
      */
     private function action($docs, $tableName, $signMode = self::SIGN_MODE)
     {
@@ -205,13 +205,14 @@ class CloudsearchDoc
             throw new Exception('Operation failed. The docs is not correct.');
         }
 
-        $params = array(
-            'action'        => "push",
+        $params = [
+            'action'     => "push",
             'items'      => json_encode($docs),
             'table_name' => $tableName,
-        );
+        ];
 
-        if ($signMode == self::SIGN_MODE) {;
+        if ($signMode == self::SIGN_MODE) {
+            ;
             $params['sign_mode'] = self::SIGN_MODE;
         }
 
@@ -220,15 +221,15 @@ class CloudsearchDoc
 
     /**
      * 重新生成doc文档。
-     * @param array $docs doc文档
+     * @param array  $docs doc文档
      * @param string $type 操作类型，有ADD、UPDATE、REMOVE。
      * @return array 返回重新生成的doc文档。
      */
     private function generate($docs, $type)
     {
-        $result = array();
+        $result = [];
         foreach ($docs as $doc) {
-            $item           = array('cmd' => $type);
+            $item           = ['cmd' => $type];
             $item['fields'] = $doc;
             $result[]       = $item;
         }
@@ -247,20 +248,21 @@ class CloudsearchDoc
      * @param string $fileName 本地文件。
      * @param string $primaryKey 指定此表的主键。
      * @param string $tableName 指定表名。
-     * @param array $multiValue 指定此表中的多值的字段。默认值为空
-     * @param int $offset 指定从第offset条记录开始导入。默认值为1
+     * @param array  $multiValue 指定此表中的多值的字段。默认值为空
+     * @param int    $offset 指定从第offset条记录开始导入。默认值为1
      * @param number $maxSize 指定每次push数据的最大值，单位为MB。默认值为4
-     * @param int $frequence 指定上传数据的频率，默认值为4，单位为次/秒
+     * @param int    $frequence 指定上传数据的频率，默认值为4，单位为次/秒
      *
      * @return string 返回如果成功上传或上传失败的状态。
      */
     public function pushCSVFile($fileName, $primaryKey, $tableName,
-        $multiValue = array(), $offset = 1, $maxSize = self::PUSH_MAX_SIZE,
-        $frequence = self::PUSH_FREQUENCE) {
+                                $multiValue = [], $offset = 1, $maxSize = self::PUSH_MAX_SIZE,
+                                $frequence = self::PUSH_FREQUENCE)
+    {
         $reader = $this->_connect($fileName);
 
         $lineNo           = 0;
-        $buffter          = array();
+        $buffter          = [];
         $latestLine       = $offset - 1;
         $latestPrimaryKey = '';
         $totalSize        = 0;
@@ -291,7 +293,7 @@ class CloudsearchDoc
               Latest successful posted primary key number is '{$latestPrimaryKey}'.");
                 }
 
-                $item        = array();
+                $item        = [];
                 $item['cmd'] = self::DOC_ADD;
                 if (!empty($multiValue)) {
                     foreach ($multiValue as $field => $separator) {
@@ -335,10 +337,10 @@ class CloudsearchDoc
                             $latestPrimaryKey = 0;
                         }
                     }
-                    $buffer    = array();
+                    $buffer    = [];
                     $totalSize = 0;
                 }
-                $buffer[] = $item;
+                $buffer[]  = $item;
                 $totalSize += $currentSize;
             }
 
@@ -393,18 +395,19 @@ class CloudsearchDoc
      *
      * @param string $fileName 指定HA3DOC所有在的路径。
      * @param string $tableName 指定要导入的表的名称。
-     * @param int $offset 指定偏移行数，如果非0，则从当前行一下的数据开始导入。默认值为：1
+     * @param int    $offset 指定偏移行数，如果非0，则从当前行一下的数据开始导入。默认值为：1
      * @param number $maxSize 指定每次导入到api接口的数据量的大小，单位MB，默认值为：4
-     * @param int $frequence 指定每秒钟导入的频率，单位次/秒，默认值为：4
-     * @throws Exception 如果在导入的过程中由于字段问题或接口问题则抛出异常。
+     * @param int    $frequence 指定每秒钟导入的频率，单位次/秒，默认值为：4
      * @return string 返回导入成功标志。
+     * @throws Exception 如果在导入的过程中由于字段问题或接口问题则抛出异常。
      */
     public function pushHADocFile($fileName, $tableName, $offset = 1,
-        $maxSize = self::PUSH_MAX_SIZE, $frequence = self::PUSH_FREQUENCE) {
+                                  $maxSize = self::PUSH_MAX_SIZE, $frequence = self::PUSH_FREQUENCE)
+    {
         $reader = $this->_connect($fileName);
 
         // 默认doc初始结构。
-        $doc = array('cmd' => '', 'fields' => array());
+        $doc = ['cmd' => '', 'fields' => []];
 
         // 当前行号，用来记录当前已经解析到了第多少行。
         $lineNumber = 1;
@@ -428,7 +431,7 @@ class CloudsearchDoc
 
         $time = time();
 
-        $buffer = array();
+        $buffer = [];
 
         // 开始遍历文件。
         try {
@@ -482,15 +485,15 @@ class CloudsearchDoc
                         }
 
                         // 重置buffer为空，并重新设定total size 为0；
-                        $buffer    = array();
+                        $buffer    = [];
                         $totalSize = 0;
                     }
                     // doc 添加到buffer中，并增加total size的大小。
-                    $buffer[] = $doc;
+                    $buffer[]  = $doc;
                     $totalSize += $currentSize;
 
                     // 初始化doc。
-                    $doc = array('cmd' => '', 'fields' => array());
+                    $doc = ['cmd' => '', 'fields' => []];
                 } else if ($separator == self::HA_DOC_FIELD_SEPARATOR) {
                     // 表示当前字段结束。
                     $detail = substr($line, 0, -2);
@@ -499,11 +502,11 @@ class CloudsearchDoc
 
                         // 表示当前行非第一行数据，则获取最后生成的字段名称并给其赋值。
                         $doc['fields'][$lastField] =
-                        $this->_extractFieldValue($doc['fields'][$lastField] . $detail);
+                            $this->_extractFieldValue($doc['fields'][$lastField] . $detail);
                     } else {
 
                         // 表示当前为第一行数据，则解析key 和value。
-                        list($key, $value) = $this->_parseHADocField($detail);
+                        [$key, $value] = $this->_parseHADocField($detail);
 
                         if (strtoupper($key) == 'CMD') {
                             $doc['cmd'] = strtoupper($value);
@@ -522,7 +525,7 @@ class CloudsearchDoc
                         $doc['fields'][$lastField] .= $line;
                     } else {
                         // 表示字段的第一行数据。
-                        list($key, $value) = $this->_parseHADocField($line);
+                        [$key, $value] = $this->_parseHADocField($line);
 
                         $doc['fields'][$key] = $value;
                         $lastField           = $key;
@@ -546,7 +549,7 @@ class CloudsearchDoc
             }
 
             return json_encode(
-                array('status' => 'OK', 'message' => 'The data is posted successfully.')
+                ['status' => 'OK', 'message' => 'The data is posted successfully.']
             );
         } catch (Exception $e) {
             throw new Exception(
@@ -559,8 +562,8 @@ class CloudsearchDoc
     /**
      * 创建一个文件指针资源。
      * @param string $fileName
-     * @throws Exception
      * @return resource 返回文件指针。
+     * @throws Exception
      */
     private function _connect($fileName)
     {
@@ -586,7 +589,7 @@ class CloudsearchDoc
         if ($pos !== false) {
             $key   = substr($string, 0, $pos);
             $value = substr($string, $pos + 1);
-            return array($key, $value);
+            return [$key, $value];
         } else {
             throw new Exception('The are no key and value in the field.');
         }

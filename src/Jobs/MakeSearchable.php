@@ -20,7 +20,7 @@ class MakeSearchable implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param \Illuminate\Database\Eloquent\Collection $models
      * @return void
      */
     public function __construct($models)

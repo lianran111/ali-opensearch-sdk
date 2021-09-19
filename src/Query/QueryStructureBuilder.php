@@ -12,38 +12,38 @@ class QueryStructureBuilder
 {
     use Whenable;
 
-	public $wheres = [];
+    public $wheres = [];
 
     protected $grammar;
 
-	protected $bindings = [
-		'where' => [],
-	];
+    protected $bindings = [
+        'where' => [],
+    ];
 
-	protected $operators = [':'];
+    protected $operators = [':'];
 
-	protected function __construct(Grammar $grammar = null)
-	{
-		$this->grammar = $grammar ?: new Grammar;
-	}
+    protected function __construct(Grammar $grammar = null)
+    {
+        $this->grammar = $grammar ? : new Grammar;
+    }
 
-	public static function make()
-	{
-		return new static;
-	}
+    public static function make()
+    {
+        return new static;
+    }
 
-	public function toSql()
-	{
-		return $this->grammar->compileSelect($this);
-	}
+    public function toSql()
+    {
+        return $this->grammar->compileSelect($this);
+    }
 
-	public function where($column, $operator = null, $value = null, $boolean = 'and')
-	{
-		if (is_array($column)) {
+    public function where($column, $operator = null, $value = null, $boolean = 'and')
+    {
+        if (is_array($column)) {
             return $this->addArrayOfWheres($column, $boolean);
         }
 
-        list($value, $operator) = $this->prepareValueAndOperator(
+        [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() == 2
         );
 
@@ -52,8 +52,8 @@ class QueryStructureBuilder
         }
 
         // 暂时把所有的操作都转化为 =，因为对于 opensearch 来说只有这么一个.
-        if (! in_array(strtolower($operator), $this->operators, true)) {
-            list($value, $operator) = [$operator, ':'];
+        if (!in_array(strtolower($operator), $this->operators, true)) {
+            [$value, $operator] = [$operator, ':'];
         }
 
         // 处理普通情况
@@ -64,14 +64,14 @@ class QueryStructureBuilder
         $this->addBinding($value, 'where');
 
         return $this;
-	}
+    }
 
-	public function orWhere($column, $operator = null, $value = null)
+    public function orWhere($column, $operator = null, $value = null)
     {
         return $this->where($column, $operator, $value, 'or');
     }
 
-	protected function addArrayOfWheres($column, $boolean, $method = 'where')
+    protected function addArrayOfWheres($column, $boolean, $method = 'where')
     {
         return $this->whereNested(function ($query) use ($column, $method) {
             foreach ($column as $key => $value) {
@@ -113,7 +113,7 @@ class QueryStructureBuilder
 
     protected function addBinding($value, $type = 'where')
     {
-        if (! array_key_exists($type, $this->bindings)) {
+        if (!array_key_exists($type, $this->bindings)) {
             throw new InvalidArgumentException("Invalid binding type: {$type}.");
         }
 
@@ -135,7 +135,7 @@ class QueryStructureBuilder
     {
         if ($useDefault) {
             return [$operator, ':'];
-        } elseif ($this->invalidOperatorAndValue($operator, $value)) {
+        } else if ($this->invalidOperatorAndValue($operator, $value)) {
             throw new InvalidArgumentException('Illegal operator and value combination.');
         }
 
@@ -145,14 +145,14 @@ class QueryStructureBuilder
     /**
      * Opensearch 只支持索引等于这一个操作
      *
-     * @param  string  $operator
-     * @param  mixed  $value
+     * @param string $operator
+     * @param mixed  $value
      * @return bool
      */
     protected function invalidOperatorAndValue($operator, $value)
     {
         $isOperator = in_array($operator, $this->operators);
 
-        return is_null($value) && $isOperator && ! in_array($operator, ['=']);
+        return is_null($value) && $isOperator && !in_array($operator, ['=']);
     }
 }

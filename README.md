@@ -17,7 +17,7 @@ scout 默认引擎是 algolia：https://www.algolia.com
 ## 安装
 
 ```shell
-composer require lingxi/ali-opensearch-sdk
+composer require lianran111/ali-opensearch-sdk
 ```
 
 ## 配置

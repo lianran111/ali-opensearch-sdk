@@ -31,11 +31,11 @@ class FlushCommand extends Command
         $events->listen(ModelsDeleted::class, function ($event) use ($class) {
             $key = $event->models->last()->getKey();
 
-            $this->line('<comment>Deleted ['.$class.'] models up to ID:</comment> '.$key);
+            $this->line('<comment>Deleted [' . $class . '] models up to ID:</comment> ' . $key);
         });
 
         $model::removeAllFromSearch();
 
-        $this->info('All ['.$class.'] records have been flushed.');
+        $this->info('All [' . $class . '] records have been flushed.');
     }
 }

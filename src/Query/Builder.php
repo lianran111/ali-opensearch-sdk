@@ -19,10 +19,10 @@ class Builder
 
     public function build($builder)
     {
-        $this->index($builder->index ?: $builder->model->searchableAs());
+        $this->index($builder->index ? : $builder->model->searchableAs());
         $this->query($builder->query, $builder->rawQuerys);
         $this->filter($builder->filters, $builder->rawFilters);
-        $this->hit($builder->limit ?: 20, $builder->page ?: 1);
+        $this->hit($builder->limit ? : 20, $builder->page ? : 1);
         $this->sort($builder->orders);
         $this->addFields($builder->fields);
         $this->addDistinct($builder->distincts);
@@ -37,7 +37,7 @@ class Builder
     /**
      * 搜索的应用
      *
-     * @param  array|string $index
+     * @param array|string $index
      * @return null
      */
     protected function index($index)
@@ -55,14 +55,14 @@ class Builder
      * 过滤 filter 子句
      *
      * @see https://help.aliyun.com/document_detail/29158.html
-     * @param  array $filters
-     * @param  array $rawFilters
+     * @param array $filters
+     * @param array $rawFilters
      * @return null
      */
     protected function filter(array $filters, array $rawFilters)
     {
         foreach ($filters as $filter) {
-            list($key, $operator, $value) = $filter;
+            [$key, $operator, $value] = $filter;
 
             if (!is_numeric($value) && is_string($value)) {
                 // literal类型的字段值必须要加双引号，支持所有的关系运算，不支持算术运算
@@ -80,17 +80,17 @@ class Builder
     /**
      * 查询 query 子句
      *
+     * @param mixed $query
+     * @return null
      * @example (name:'rry' AND age:'10') OR (name: 'lirui')
      *
      * @see https://help.aliyun.com/document_detail/29157.html
-     * @param  mixed $query
-     * @return null
      */
     protected function query($query, $rawQuerys)
     {
         if ($query instanceof QueryStructureBuilder) {
             $query = $query->toSql();
-        } elseif (! is_string($query)) {
+        } else if (!is_string($query)) {
             $query = collect($query)
                 ->map(function ($value, $key) {
                     return $key . ':\'' . $value . '\'';
@@ -107,7 +107,7 @@ class Builder
      * 返回文档的最大数量
      *
      * @see https://help.aliyun.com/document_detail/29156.html
-     * @param  integer $limit
+     * @param integer $limit
      * @return null
      */
     protected function hit($limit, $page)
@@ -120,7 +120,7 @@ class Builder
      * 排序sort子句
      *
      * @see https://help.aliyun.com/document_detail/29159.html
-     * @param  array $orders
+     * @param array $orders
      * @return null
      */
     protected function sort(array $orders)

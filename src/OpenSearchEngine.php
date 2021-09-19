@@ -37,7 +37,7 @@ class OpenSearchEngine extends Engine
     /**
      * Create a new engine instance.
      *
-     * @param  \Lingxi\AliOpenSearch\OpenSearchClient $opensearch
+     * @param \Lingxi\AliOpenSearch\OpenSearchClient $opensearch
      * @return void
      */
     public function __construct(OpenSearchClient $opensearch)
@@ -50,7 +50,7 @@ class OpenSearchEngine extends Engine
     /**
      * Add the given model in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param \Illuminate\Database\Eloquent\Collection $models
      * @return void
      */
     public function add($models)
@@ -59,7 +59,7 @@ class OpenSearchEngine extends Engine
         $doc = $this->getCloudSearchDoc($models);
 
         foreach ($this->getSearchableData($models, ['update']) as $name => $value) {
-            if (! empty($value['update'])) {
+            if (!empty($value['update'])) {
                 try {
                     $this->waitASecond();
                     $doc->add($value['update'], $name);
@@ -76,7 +76,7 @@ class OpenSearchEngine extends Engine
     /**
      * Update the given model in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param \Illuminate\Database\Eloquent\Collection $models
      * @return void
      */
     public function update($models)
@@ -86,7 +86,7 @@ class OpenSearchEngine extends Engine
 
         foreach ($this->getSearchableData($models) as $name => $value) {
             foreach ($value as $method => $items) {
-                if (! empty($items)) {
+                if (!empty($items)) {
                     try {
                         $this->waitASecond();
                         $doc->$method($items, $name);
@@ -104,7 +104,7 @@ class OpenSearchEngine extends Engine
     /**
      * Remove the given model from the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param \Illuminate\Database\Eloquent\Collection $models
      * @return void
      */
     public function delete($models)
@@ -126,15 +126,15 @@ class OpenSearchEngine extends Engine
             } else {
                 $toBeDeleteData = $models->map(function ($model) {
                     return [
-                        'cmd' => 'delete',
+                        'cmd'    => 'delete',
                         'fields' => [
                             'id' => $model->id,
-                        ]
+                        ],
                     ];
                 });
             }
 
-            if (! empty($toBeDeleteData)) {
+            if (!empty($toBeDeleteData)) {
                 try {
                     $this->waitASecond();
                     $doc->delete($toBeDeleteData, $name);
@@ -153,7 +153,7 @@ class OpenSearchEngine extends Engine
      *
      * 经过测试 200ms 比较稳定, 在请求前后分别停止 100ms
      *
-     * @param  integer $microSeconds
+     * @param integer $microSeconds
      * @return null
      */
     protected function waitASecond($microSeconds = 100000)
@@ -173,7 +173,7 @@ class OpenSearchEngine extends Engine
      * 获取模型的操作数据
      *
      * @param \Illuminate\Database\Eloquent\Collection $models
-     * @param array $actions
+     * @param array                                    $actions
      * @return array
      */
     protected function getSearchableData($models, array $actions = ['delete', 'update'])
@@ -204,7 +204,7 @@ class OpenSearchEngine extends Engine
             ksort($callbacks);
 
             foreach ($callbacks as $name => $callback) {
-                if (! empty($callback)) {
+                if (!empty($callback)) {
                     foreach ($actions as $action) {
                         if (isset($callback[$action])) {
                             $data[$name][$action] = array_merge(
@@ -223,14 +223,14 @@ class OpenSearchEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param \Laravel\Scout\Builder $builder
      * @return mixed
      */
     public function search(ScoutBuilder $builder)
     {
         $searchKey = serialize($builder);
 
-        if (! isset($this->searchResult[$searchKey])) {
+        if (!isset($this->searchResult[$searchKey])) {
             $this->searchResult[$searchKey] = $this->performSearch($this->buildLaravelBuilderIntoOpensearch($builder));
         }
 
@@ -257,8 +257,8 @@ class OpenSearchEngine extends Engine
     /**
      * Map the given results to instances of the given model.
      *
-     * @param  mixed $results
-     * @param  \Illuminate\Database\Eloquent\Model $model
+     * @param mixed                               $results
+     * @param \Illuminate\Database\Eloquent\Model $model
      * @return \Illuminate\Support\Collection
      * @throws OpensearchException
      */
@@ -288,8 +288,8 @@ class OpenSearchEngine extends Engine
     /**
      * Pluck and return the primary keys of the given results.
      *
-     * @param  mixed  $results
-     * @param  string  $field
+     * @param mixed  $results
+     * @param string $field
      * @return \Illuminate\Support\Collection
      */
     public function mapIds($results, $field = 'id')
@@ -300,7 +300,7 @@ class OpenSearchEngine extends Engine
     /**
      * Get the total count from a raw result returned by the engine.
      *
-     * @param  mixed  $results
+     * @param mixed $results
      * @return int
      */
     public function getTotalCount($results)
@@ -320,7 +320,7 @@ class OpenSearchEngine extends Engine
     /**
      * Get the results of the given query mapped onto models.
      *
-     * @param  \Lingxi\AliOpenSearch\ScoutBuilder  $builder
+     * @param \Lingxi\AliOpenSearch\ScoutBuilder $builder
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function get(ScoutBuilder $builder)
@@ -333,8 +333,8 @@ class OpenSearchEngine extends Engine
     /**
      * Get the facet from search results.
      *
-     * @param  string  $key
-     * @param  ExtendedBuilder $builder
+     * @param string          $key
+     * @param ExtendedBuilder $builder
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function facet($key, ExtendedBuilder $builder)

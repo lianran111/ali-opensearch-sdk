@@ -158,19 +158,19 @@ class CloudsearchClient
 
     /**
      *指定使用加密key和对应的secret
-     *@var enum('opensearch','aliyun')
+     * @var enum('opensearch','aliyun')
      */
     protected $key_type = 'opensearch';
 
     /**
      *指定阿里云签名算法方式
-     *@var enum('HMAC-SHA1'）
+     * @var enum('HMAC-SHA1'）
      */
     protected $signatureMethod = 'HMAC-SHA1';
 
     /**
      *指定阿里云签名算法版本
-     *@var enum('HMAC-SHA1'）
+     * @var enum('HMAC-SHA1'）
      */
     protected $signatureVersion = '1.0';
 
@@ -179,9 +179,9 @@ class CloudsearchClient
      *
      * 与服务器交互的客户端，支持单例方式调用
      *
-     * @param string $key    用户的key，从阿里云网站中获取的Access Key ID。
+     * @param string $key 用户的key，从阿里云网站中获取的Access Key ID。
      * @param string $secret 用户的secret，对应的Access Key Secret。
-     * @param array $opts   包含下面一些可选信息
+     * @param array  $opts 包含下面一些可选信息
      * @subparam string version 使用的API版本。 默认值为:v2
      * @subparam string host    指定请求的host地址。默认值为:http://opensearch-cn-hangzhou.aliyuncs.com
      * @subparam string gzip    指定返回的结果用gzip压缩。 默认值为:false
@@ -190,7 +190,7 @@ class CloudsearchClient
      * @subparam string signatureVersion 签名算法版本。 默认值为:1.0
      * @param string $key_type key和secret类型，在这里必须设定为'aliyun'，表示这个是aliyun颁发的，默认值opensearch是为了兼容老用户。默认值为:opensearch
      */
-    public function __construct($key, $secret, $opts = array(), $key_type = 'opensearch')
+    public function __construct($key, $secret, $opts = [], $key_type = 'opensearch')
     {
 
         $this->key_type = $key_type;
@@ -198,7 +198,7 @@ class CloudsearchClient
         if ($this->key_type == 'opensearch') {
             $this->clientId     = $key;
             $this->clientSecret = $secret;
-        } elseif ($this->key_type == 'aliyun') {
+        } else if ($this->key_type == 'aliyun') {
             $this->accessKeyId = $key;
             $this->secret      = $secret;
         } else {
@@ -252,13 +252,13 @@ class CloudsearchClient
      *
      * 向服务器发出请求并获得返回结果。
      *
-     * @param string $path   当前请求的path路径。
-     * @param array $params 当前请求的所有参数数组。
+     * @param string $path 当前请求的path路径。
+     * @param array  $params 当前请求的所有参数数组。
      * @param string $method 当前请求的方法。默认值为:GET
      * @return string 返回获取的结果。
      * @donotgeneratedoc
      */
-    public function call($path, $params = array(), $method = self::METHOD)
+    public function call($path, $params = [], $method = self::METHOD)
     {
         $url = $this->baseURI . $path;
         if ($this->key_type == 'opensearch') {
@@ -324,7 +324,7 @@ class CloudsearchClient
      * @param array $params 返回生成的签名。
      * @return string
      */
-    protected function _sign($params = array())
+    protected function _sign($params = [])
     {
         $query = "";
         if (isset($params['sign_mode']) && $params['sign_mode'] == 1) {
@@ -345,7 +345,7 @@ class CloudsearchClient
      * @param array $params 返回生成签名
      * @return string
      */
-    protected function _sign_aliyun($params = array(), $method = self::METHOD)
+    protected function _sign_aliyun($params = [], $method = self::METHOD)
     {
         if (isset($params['sign_mode']) && $params['sign_mode'] == 1) {
             unset($params['items']);
@@ -370,9 +370,9 @@ class CloudsearchClient
      * @return array
      *
      */
-    protected function _params_filter($parameters = array())
+    protected function _params_filter($parameters = [])
     {
-        $params = array();
+        $params = [];
         while (list($key, $val) = each($parameters)) {
             if ($key == "Signature" || $val === "" || $val === null) {
                 continue;
@@ -394,14 +394,15 @@ class CloudsearchClient
         $res = preg_replace('/%7E/', '~', $res);
         return $res;
     }
+
     /**
      * 通过curl的方式获取请求结果。
      * @param string $url 请求的URI。
-     * @param array $params 请求的参数数组。
+     * @param array  $params 请求的参数数组。
      * @param string $method 请求的方法，默认为self::METHOD。
      * @return string 返回获取的结果。
      */
-    private function _curl($url, $params = array(), $method = self::METHOD)
+    private function _curl($url, $params = [], $method = self::METHOD)
     {
         $query  = $this->_buildQuery($params);
         $method = strtoupper($method);
@@ -412,7 +413,7 @@ class CloudsearchClient
             $method = self::METHOD_POST;
         }
 
-        $options = array(
+        $options = [
             CURLOPT_HTTP_VERSION   => 'CURL_HTTP_VERSION_1_1',
             CURLOPT_CONNECTTIMEOUT => $this->connect_timeout,
             CURLOPT_TIMEOUT        => $this->timeout,
@@ -420,8 +421,8 @@ class CloudsearchClient
             CURLOPT_HEADER         => false,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_USERAGENT      => "opensearch/php sdk " . $this->sdkVersion, //php sdk 版本信息
-            CURLOPT_HTTPHEADER     => array('Expect:'),
-        );
+            CURLOPT_HTTPHEADER     => ['Expect:'],
+        ];
 
         if ($method == self::METHOD_POST) {
             $options[CURLOPT_POSTFIELDS] = $params;
@@ -448,12 +449,12 @@ class CloudsearchClient
     /**
      * 通过socket的方式获取请求结果。
      * @param string $url 请求的URI。
-     * @param array $params 请求的参数数组。
+     * @param array  $params 请求的参数数组。
      * @param string $method 请求方法，默认为self::METHOD。
-     * @throws Exception
      * @return string
+     * @throws Exception
      */
-    private function _socket($url, $params = array(), $method = self::METHOD)
+    private function _socket($url, $params = [], $method = self::METHOD)
     {
         $method = strtoupper($method);
 
@@ -515,18 +516,18 @@ class CloudsearchClient
      */
     private function _parseResponse($response)
     {
-        list($headerContent) = explode("\r\n\r\n", $response);
-        $header              = $this->_parseHttpSocketHeader($headerContent);
-        $response            = trim(stristr($response, "\r\n\r\n"), "\r\n");
+        [$headerContent] = explode("\r\n\r\n", $response);
+        $header   = $this->_parseHttpSocketHeader($headerContent);
+        $response = trim(stristr($response, "\r\n\r\n"), "\r\n");
 
-        $ret           = array();
-        $ret["result"] =
-        (isset($header['Content-Encoding']) &&
-            trim($header['Content-Encoding']) == 'gzip') ?
-        $this->_gzdecode($response, $header) : $this->_checkChunk($response, $header);
+        $ret                      = [];
+        $ret["result"]            =
+            (isset($header['Content-Encoding']) &&
+                trim($header['Content-Encoding']) == 'gzip') ?
+                $this->_gzdecode($response, $header) : $this->_checkChunk($response, $header);
         $ret["info"]["http_code"] =
-        isset($header["http_code"]) ? $header["http_code"] : 0;
-        $ret["info"]["headers"] = $header;
+            isset($header["http_code"]) ? $header["http_code"] : 0;
+        $ret["info"]["headers"]   = $header;
 
         return $ret;
     }
@@ -534,7 +535,7 @@ class CloudsearchClient
     /**
      * 生成http头信息。
      *
-     * @param array $parse
+     * @param array  $parse
      * @param string $method HTTP方法。
      * @param string $data HTTP参数串。
      * @return string
@@ -545,8 +546,8 @@ class CloudsearchClient
         $content   = '';
 
         if ($method == self::METHOD_GET) {
-            $data  = ltrim($data, '&');
-            $query = isset($parse['query']) ? $parse['query'] : '';
+            $data          = ltrim($data, '&');
+            $query         = isset($parse['query']) ? $parse['query'] : '';
             $parse['path'] .= ($query ? '&' : '?') . $data;
         } else {
             $method    = self::METHOD_POST;
@@ -585,8 +586,8 @@ class CloudsearchClient
     /**
      * 解析URL并生成host、schema、path、query等信息。
      * @param string $url
-     * @throws Exception
      * @return Ambigous <string, mixed>
+     * @throws Exception
      */
     private function _parseUrl($url)
     {
@@ -600,15 +601,15 @@ class CloudsearchClient
         }
 
         $parse['host'] = str_replace(
-            array('http://', 'https://'),
-            array('', 'ssl://'),
-            $parse['scheme'] . "://"
-        ) . $parse['host'];
+                ['http://', 'https://'],
+                ['', 'ssl://'],
+                $parse['scheme'] . "://"
+            ) . $parse['host'];
 
         $parse["path"] = isset($parse["path"]) ? $parse["path"] : '/';
         $query         = isset($parse['query']) ? $parse['query'] : '';
 
-        $path          = str_replace(array('\\', '//'), '/', $parse['path']);
+        $path          = str_replace(['\\', '//'], '/', $parse['path']);
         $parse['path'] = $query ? $path . "?" . $query : $path;
 
         return $parse;
@@ -622,12 +623,12 @@ class CloudsearchClient
     private static function _parseHttpSocketHeader($str)
     {
         $slice   = explode("\r\n", $str);
-        $headers = array();
+        $headers = [];
 
         foreach ($slice as $v) {
             if (false !== strpos($v, "HTTP")) {
-                list(, $headers["http_code"]) = explode(" ", $v);
-                $headers["status"]            = $v;
+                [, $headers["http_code"]] = explode(" ", $v);
+                $headers["status"] = $v;
             } else {
                 $item              = explode(":", $v);
                 $headers[$item[0]] = isset($item[1]) ? $item[1] : '';
@@ -667,7 +668,7 @@ class CloudsearchClient
      * 检查当前是否是返回chunk，如果是的话，从body中获取content长度并截取。
      *
      * @param string $data body内容。
-     * @param array $header header头信息的数组。
+     * @param array  $header header头信息的数组。
      * @param string $rn chunk的截取字符串。
      *
      * @return string 如果为chunk则返回正确的body内容，否则全部返回。
@@ -685,7 +686,7 @@ class CloudsearchClient
 
     protected function get_microtime()
     {
-        list($usec, $sec) = explode(" ", microtime());
+        [$usec, $sec] = explode(" ", microtime());
         return floor(((float) $usec + (float) $sec) * 1000);
     }
 }
